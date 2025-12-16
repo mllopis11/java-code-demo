@@ -1,4 +1,4 @@
-package mike.demo.file.parser.domain;
+package mike.demo.record.field;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -22,6 +22,12 @@ public interface Field<T> {
 
     default boolean required() {
         return !this.defaultValue().isPresent();
+    }
+
+    default String schema() {
+        return "%s (type: %s, offset: %d, length: %s, required: %s, default: '%s')".formatted(
+            this.name(), this.type().getSimpleName(), this.offset(), this.length(),
+            this.required(), this.defaultValue().orElse(null));
     }
 
     default String validate(String rawValue) {

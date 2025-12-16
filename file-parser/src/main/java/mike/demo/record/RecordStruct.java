@@ -1,53 +1,47 @@
-package mike.demo.file.parser.domain;
+package mike.demo.record;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.stream.Collectors;
 
 import mike.bootstrap.utilities.helpers.Strings;
+import mike.demo.record.field.Field;
+import mike.demo.record.field.FieldDate;
+import mike.demo.record.field.FieldNumber;
+import mike.demo.record.field.FieldText;
 
-public record FileStructure(FileType fileType, String delimiter, List<Field<?>> fields) {
+public record RecordStruct(String name, List<Field<?>> fields) {
 
-    private static final Logger log = LoggerFactory.getLogger(FileStructure.class);
+    public String schema() {
+        var separator = System.lineSeparator();
 
-    public void schema() {
         var struct = fields.stream()
-            .map(f -> "%s (type: %s, offset: %d, length: %s, default: '%s', required: %s)\n".formatted( 
-                f.name(), f.type(), f.offset(), f.length(), f.defaultValue(), f.required()))
-            .toList();
+            .map(f -> "- %s".formatted(f.schema()))
+            .collect(Collectors.joining(separator));
 
-        log.info("Show schema:\n {}", struct);
+        return new StringBuilder(separator)
+                    .append("schema: ").append(name)
+                    .append(separator).append(struct)
+                    .toString();
     }
 
-    public static StructureBuilder csv() {
-        return FileStructure.csv(null);
-    }
-
-    public static StructureBuilder csv(String delimiter) {
-        return new StructureBuilder(FileType.CSV, delimiter);
-    }
-
-    public static StructureBuilder fixed() {
-        return new StructureBuilder(FileType.FIXED, null);
+    public static StructureBuilder name(String name) {
+        return new StructureBuilder(name);
     }
 
     public static class StructureBuilder {
 
-        private final FileType fileType;
+        private final String name;
         private final List<Field<?>> fields = new ArrayList<>();
-        private final String delimiter;
-
+       
         private int position = 1;
         private int offset = 0;
 
-        private StructureBuilder(FileType fileType, String delimiter) {
-            this.fileType = fileType;
-            this.delimiter = Strings.blankAs(delimiter, fileType.delimiter());
+        private StructureBuilder(String name) {
+            this.name = Strings.blankAs(name, "unknown");
         }
 
         // Text fields
@@ -107,8 +101,8 @@ public record FileStructure(FileType fileType, String delimiter, List<Field<?>> 
             return this;
         }
 
-        public FileStructure build() {
-            return new FileStructure(this.fileType, delimiter, this.fields);
+        public RecordStruct build() {
+            return new RecordStruct(this.name, this.fields);
         }
     }
 }

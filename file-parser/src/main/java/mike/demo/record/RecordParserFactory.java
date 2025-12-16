@@ -1,26 +1,36 @@
-package mike.demo.file.parser.domain;
+package mike.demo.record;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import mike.bootstrap.utilities.helpers.Strings;
+import mike.demo.record.field.Field;
 
 public class RecordParserFactory {
 
     private RecordParserFactory() {}
 
-    public static RecordParser create(FileStructure fileStructure) {
-        return switch (fileStructure.fileType()) {
-            case CSV -> new CsvRecordParser(fileStructure);
-            case FIXED -> new FixedRecordParser(fileStructure);
-        };
+    public static RecordParser csv(RecordStruct structure) {
+        return RecordParserFactory.csv(structure, null);
+    }
+
+    public static RecordParser csv(RecordStruct structure, String delimiter) {
+        return new CsvRecordParser(structure, delimiter);
+    }
+
+    public static RecordParser fixed(RecordStruct structure) {
+        return new FixedRecordParser(structure);
     }
 
     private static class CsvRecordParser implements RecordParser {
 
-        private final FileStructure fileStructure;
+        private final RecordStruct fileStructure;
+        private final String delimiter;
 
         private int lineCounter = 0;
 
-        public CsvRecordParser(FileStructure fileStructure) {
+        private CsvRecordParser(RecordStruct fileStructure, String delimiter) {
             this.fileStructure = fileStructure;
+            this.delimiter = Strings.blankAs(delimiter, ";");
         }
 
         @Override
@@ -29,7 +39,7 @@ public class RecordParserFactory {
             lineCounter++;
             var fields = fileStructure.fields();
 
-            String[] values = line.split(fileStructure.delimiter());
+            String[] values = line.split(delimiter);
 
             if (values.length != fields.size()) {
                 throw new IllegalStateException(
@@ -51,11 +61,11 @@ public class RecordParserFactory {
 
     public static class FixedRecordParser implements RecordParser {
 
-        private final FileStructure fileStructure;
+        private final RecordStruct fileStructure;
 
         private int lineCounter = 0;
 
-        public FixedRecordParser(FileStructure fileStructure) {
+        private FixedRecordParser(RecordStruct fileStructure) {
             this.fileStructure = fileStructure;
         }
 

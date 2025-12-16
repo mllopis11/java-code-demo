@@ -1,11 +1,11 @@
-package mike.demo.file.parser.domain;
+package mike.demo.record.field;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import mike.bootstrap.utilities.helpers.Strings;
 
-record FieldText(
+public record FieldText(
         String name, int position, int offset, int length,
         Optional<String> defaultValue, Optional<Predicate<String>> accept) implements Field<String> {
 

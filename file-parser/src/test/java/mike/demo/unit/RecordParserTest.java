@@ -2,12 +2,22 @@ package mike.demo.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import mike.demo.file.parser.domain.RecordParserFactory;
+import mike.demo.record.RecordParserFactory;
 
-class RecordParserTest implements FileStructureTestSupport {
+class RecordParserTest implements RecordStructTestSupport {
+
+    private static final Logger log = LoggerFactory.getLogger(RecordParserTest.class);
+
+    @BeforeAll
+    static void init() {
+        log.debug("Show schema ...{}", REC_STRUCT.schema());
+    }
 
     @Nested
     class CsvRecords {
@@ -15,7 +25,7 @@ class RecordParserTest implements FileStructureTestSupport {
         @Test
         void should_return_parsed_records() {
 
-            var recordParser = RecordParserFactory.create(CSV_STRUCTURE);
+            var recordParser = RecordParserFactory.csv(REC_STRUCT, ",");
             var listOfEecordValues = CSV_LINES_SAMPLE.stream().map(recordParser::parse).toList();
 
             assertThat(listOfEecordValues).hasSize(3);
@@ -28,9 +38,7 @@ class RecordParserTest implements FileStructureTestSupport {
         @Test
         void should_return_parsed_records() {
 
-            FIXED_STRUCTURE.schema();
-
-            var recordParser = RecordParserFactory.create(FIXED_STRUCTURE);
+            var recordParser = RecordParserFactory.fixed(REC_STRUCT);
             var listOfEecordValues = FIXED_LINES_SAMPLE.stream().map(recordParser::parse).toList();
 
             assertThat(listOfEecordValues).hasSize(3);

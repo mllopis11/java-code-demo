@@ -1,4 +1,4 @@
-package mike.demo.file.parser.domain;
+package mike.demo.record;
 
 public record RecordValue(String name, Object value) {
 

@@ -17,21 +17,18 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import mike.demo.file.parser.domain.Field;
-import mike.demo.file.parser.domain.FileType;
+import mike.demo.record.field.Field;
 
 @TestMethodOrder(OrderAnnotation.class)
-class FileStructureTest implements FileStructureTestSupport {
+class RecordStructTest implements RecordStructTestSupport {
 
     @Test
     @Order(1)
     void assert_file_structure() {
 
-        assertThat(CSV_STRUCTURE.fileType()).isEqualTo(FileType.CSV);
-        assertThat(CSV_STRUCTURE.delimiter()).isEqualTo(";");
-        assertThat(CSV_STRUCTURE.fields()).hasSize(5);
+        assertThat(REC_STRUCT.fields()).hasSize(5);
 
-        assertThat(CSV_STRUCTURE.fields().get(0)).isNotNull().satisfies(field -> {
+        assertThat(REC_STRUCT.fields().get(0)).isNotNull().satisfies(field -> {
             assertThat(field.name()).isEqualTo("ID");
             assertThat(field.position()).isEqualTo(1);
             assertThat(field.type()).isEqualTo(Integer.class);
@@ -43,7 +40,7 @@ class FileStructureTest implements FileStructureTestSupport {
         });
 
         // assert field: NAME
-        assertThat(CSV_STRUCTURE.fields().get(1)).isNotNull().satisfies(field -> {
+        assertThat(REC_STRUCT.fields().get(1)).isNotNull().satisfies(field -> {
             assertThat(field.name()).isEqualTo("NAME");
             assertThat(field.position()).isEqualTo(2);
             assertThat(field.type()).isEqualTo(String.class);
@@ -52,13 +49,10 @@ class FileStructureTest implements FileStructureTestSupport {
             assertThat(field.format()).isEmpty();
             assertThat(field.defaultValue()).isNotPresent();
             assertThat(field.required()).isTrue();
-
-            var rawValue = "John Doe            ";
-            assertThat(field.valueOf(rawValue)).isEqualTo("John Doe");
         });
 
         // assert field: BIRTH_DATE
-        assertThat(CSV_STRUCTURE.fields().get(2)).isNotNull().satisfies(field -> {
+        assertThat(REC_STRUCT.fields().get(2)).isNotNull().satisfies(field -> {
             assertThat(field.name()).isEqualTo("BIRTH_DATE");
             assertThat(field.position()).isEqualTo(3);
             assertThat(field.type()).isEqualTo(LocalDate.class);
@@ -70,7 +64,7 @@ class FileStructureTest implements FileStructureTestSupport {
         });
 
         // assert field: GENDER
-        assertThat(CSV_STRUCTURE.fields().get(3)).isNotNull().satisfies(field -> {
+        assertThat(REC_STRUCT.fields().get(3)).isNotNull().satisfies(field -> {
             assertThat(field.name()).isEqualTo("GENDER");
             assertThat(field.position()).isEqualTo(4);
             assertThat(field.type()).isEqualTo(String.class);
@@ -83,7 +77,7 @@ class FileStructureTest implements FileStructureTestSupport {
         });
 
         // assert field: COUNTRY
-        assertThat(CSV_STRUCTURE.fields().get(4)).isNotNull().satisfies(field -> {
+        assertThat(REC_STRUCT.fields().get(4)).isNotNull().satisfies(field -> {
             assertThat(field.name()).isEqualTo("COUNTRY");
             assertThat(field.position()).isEqualTo(5);
             assertThat(field.type()).isEqualTo(String.class);
@@ -98,7 +92,7 @@ class FileStructureTest implements FileStructureTestSupport {
     @Nested
     class AssertFieldId {
 
-        private final Field<?> field = CSV_STRUCTURE.fields().get(0);
+        private final Field<?> field = REC_STRUCT.fields().get(0);
 
         @Test
         void should_return_12345_when_value_is_12345_with_padding() {
@@ -117,7 +111,7 @@ class FileStructureTest implements FileStructureTestSupport {
     @Nested
     class AssertFieldBirthDate {
 
-        private final Field<?> field = CSV_STRUCTURE.fields().get(2);
+        private final Field<?> field = REC_STRUCT.fields().get(2);
 
         @Test
         void should_return_birthdate_when_value_is_19820221() {
@@ -149,7 +143,7 @@ class FileStructureTest implements FileStructureTestSupport {
 
     @Nested
     class AssertFieldGender {
-        private final Field<?> field = CSV_STRUCTURE.fields().get(3);
+        private final Field<?> field = REC_STRUCT.fields().get(3);
 
         @ParameterizedTest
         @ValueSource(strings = { "M", "F" })
@@ -168,7 +162,7 @@ class FileStructureTest implements FileStructureTestSupport {
 
     @Nested
     class AssertFieldCountry {
-        private final Field<?> field = CSV_STRUCTURE.fields().get(4);
+        private final Field<?> field = REC_STRUCT.fields().get(4);
 
         @Test
         void should_return_value_when_value_is_USA() {

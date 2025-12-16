@@ -1,4 +1,4 @@
-package mike.demo.file.parser.domain;
+package mike.demo.record;
 
 import java.util.List;
 

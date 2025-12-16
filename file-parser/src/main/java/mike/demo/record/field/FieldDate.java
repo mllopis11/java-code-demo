@@ -1,11 +1,11 @@
-package mike.demo.file.parser.domain;
+package mike.demo.record.field;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-record FieldDate(
+public record FieldDate(
         String name, int position, int offset, String format,
         Optional<String> defaultValue, Optional<Predicate<LocalDate>> accept) implements Field<LocalDate> {
 
