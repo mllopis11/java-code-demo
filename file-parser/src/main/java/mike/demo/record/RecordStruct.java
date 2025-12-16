@@ -15,6 +15,11 @@ import mike.demo.record.field.FieldText;
 
 public record RecordStruct(String name, List<Field<?>> fields) {
 
+    public int length() {
+        var last = fields.getLast();
+        return last.offset() + last.length();
+    }
+
     public String schema() {
         var separator = System.lineSeparator();
 
